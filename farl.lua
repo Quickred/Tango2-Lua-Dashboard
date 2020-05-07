@@ -467,6 +467,7 @@ local function gatherInput(event)
   rssi_dbm = getValue("TSNR")
   -- Get GPS values
   coords = getValue("GPS")
+  sats = getValue("Sats")
 
   -- Get the seconds left in our timer
   timerLeft = getValue('timer1')
