@@ -14,8 +14,9 @@ By default, you will see the cumulated voltages on the display screen. That mean
 ![](/screenshots/default.bmp)
 #### with Drone locator & Power ouput
 ![](/screenshots/locator-output.bmp)
-#### with GPS
-![](/screenshots/gps.bmp)
+
+#### with GPS coords and sats count
+![](/screenshots/gps-sats.bmp)
 
 ### farllh.lua
 ![](/screenshots/default-lh.bmp)
