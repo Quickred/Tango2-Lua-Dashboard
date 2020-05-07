@@ -9,14 +9,14 @@
 -- Templating
 
 -- If you set the GPS, it will not show Quad locator & Power ouput in order to keep a readable screen
-local displayGPS = false
+local displayGPS = true
 
 -- Drone locator & Power ouput
-local displayQuadLocator = true
-local displayPowerOutput = true
+local displayQuadLocator = false
+local displayPowerOutput = false
 
 -- Will be displayed only if displayGPS, Quad locator and PowerOuput are set to false
-local displayFillingText = true
+local displayFillingText = false
 
 ------- GLOBALS -------
 -- The model name when it can't detect a model name  from the handset
@@ -41,6 +41,8 @@ local link_quality = 0
 -- For debugging / development
 local lastMessage = "None"
 local lastNumberMessage = "0"
+-- global for last GPS coord if model lost
+local gpsValue = "waiting..."
 
 ------- HELPERS -------
 -- Helper converts voltage to percentage of voltage for a sexy battery percent
@@ -385,13 +387,24 @@ local function drawSendIt(start_x, start_y, rssi_dbm)
   lcd.drawText( start_x + 2, start_y + 2, "Send It !", DBLSIZE )
 
 end
+local function drawSats(start_x, start_y, output_power)
+  -- lcd.drawPixMap(start_x, start_y, "/test.bmp")
+  lcd.drawRectangle( start_x, start_y, 22, 10 )
+  lcd.drawText( start_x + 2, start_y + 2, "Sats", SMLSIZE )
+  lcd.drawRectangle( start_x, start_y + 10, 22, 20 )
+  lcd.drawText(start_x + 5, start_y + 12, output_power, DBLSIZE)
+end
+
 
 local function drawGPS(start_x, start_y, coords)
   -- lcd.drawPixMap(start_x, start_y, "/test.bmp")
   lcd.drawText( start_x + 2, start_y + 2, "GPS coordinates", SMLSIZE )
   if (type(coords) == "table") then
-    local gpsValue = round(coords["lat"],4) .. ", " .. round(coords["lon"],4)
-    lcd.drawText(start_x + 5, start_y + 12, gpsValue, SMLSIZE)
+    gpsValue = round(coords["lat"],4) .. ", " .. round(coords["lon"],4)
+    lcd.drawText(start_x + 5, start_y + 12, gpsValue, MIDSIZE)
+  else
+  -- show last position blinking
+    lcd.drawText(start_x + 5, start_y + 12, gpsValue, MIDSIZE + BLINK)
   end
 end
 
@@ -527,7 +540,7 @@ local function getModeText()
   elseif flight_mode == "ACRO" then
     modeText = "ACRO"
   elseif flight_mode == "WAIT" or flight_mode == "WAIT*" then
-    modeText = "WgAIT"
+    modeText = "WAIT"
   elseif ((string.sub(flight_mode,-1) == "*") and (flight_mode ~= "!ERR*") and (flight_mode ~= "!FS!*") and (flight_mode ~= "WAIT*")) then
     modeText = "DISARM"
   else
@@ -599,6 +612,7 @@ local function run(event)
     end
   else
     drawGPS(3, 65, coords)
+	drawSats(106,65, sats)
   end
 
 
